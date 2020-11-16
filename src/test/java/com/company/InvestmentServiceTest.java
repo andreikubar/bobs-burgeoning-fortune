@@ -9,13 +9,14 @@ import static org.junit.Assert.assertEquals;
 public class InvestmentServiceTest {
     @Test
     public void updatePrices() {
-        CryptoPriceRestClient cryptoPriceRestClientMock = mockCryptoPriceRestClient();
-        InvestmentService investmentService = new InvestmentService(cryptoPriceRestClientMock);
         List<Investment> investments = List.of(
                 new Investment("BTC")
         );
-        investmentService.updateInvestmentPrices(investments);
-        assertEquals(10.0, investments.get(0).getInstrumentPrice(), 0.001);
+        CryptoPriceRestClient cryptoPriceRestClientMock = mockCryptoPriceRestClient();
+        InvestmentDao investmentDao = mockInvestmentDao(investments);
+        InvestmentService investmentService = new InvestmentService(cryptoPriceRestClientMock, investmentDao);
+        List<Investment> investmentsWithPrices = investmentService.getInvestmentsWithPrices();
+        assertEquals(10.0, investmentsWithPrices.get(0).getInstrumentPrice(), 0.001);
     }
 
     private CryptoPriceRestClient mockCryptoPriceRestClient() {
@@ -24,10 +25,18 @@ public class InvestmentServiceTest {
             public double getPrice(Investment investment) {
                 if (investment.getInstrumentKey().equals("BTC")) {
                     return 10.0;
-                }
-                else {
+                } else {
                     return 0.0;
                 }
+            }
+        };
+    }
+
+    private InvestmentDao mockInvestmentDao(List<Investment> investments) {
+        return new InvestmentDao() {
+            @Override
+            public List<Investment> getInvestments() {
+                return investments;
             }
         };
     }

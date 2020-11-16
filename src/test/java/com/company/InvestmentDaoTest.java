@@ -1,7 +1,6 @@
 package com.company;
 
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,7 +9,7 @@ public class InvestmentDaoTest {
 
     @Test
     public void readInvestmentsFromFile() {
-        InvestmentDao investmentDao = new InvestmentDao("test_bobs_crypto.txt");
+        InvestmentDao investmentDao = new InvestmentDaoImpl("test_bobs_crypto.txt");
         Investment bitcoin = new Investment("BTC");
         bitcoin.setQuantity(10L);
         assertEquals(3, investmentDao.getInvestments().size());
@@ -25,7 +24,7 @@ public class InvestmentDaoTest {
 
     @Test
     public void malformedInputThrows() {
-        assertThrows(RuntimeException.class, () -> new InvestmentDao("malformed.txt"));
+        assertThrows(RuntimeException.class, () -> new InvestmentDaoImpl("malformed.txt"));
     }
 
 }
